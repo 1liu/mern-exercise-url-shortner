@@ -8,6 +8,8 @@ function App() {
   });
   const [created, setCreated] = useState('');
   const [error, setError] = useState('');
+  const [retrived, setRetrived] = useState('');
+
   const handleChange = event => {
     const newState = Object.assign({}, state);
     newState[event.target.name] = event.target.value;
@@ -42,6 +44,36 @@ function App() {
 
   }
 
+  const onRetrive = async (event) =>{
+    event.preventDefault();
+    setError('');
+    const newState = Object.assign({}, state);
+    newState.url = '';
+    setState(newState);
+
+    fetch('/url/' + state.alias)
+    .then((res)=>{
+      if(res.ok){
+        return res.json();
+      }
+      else{
+        console.log('error:', res)
+        setError("Link Not Found");
+        throw new Error(res.message);
+      }
+    })
+    .then(response=>{
+      const newState = Object.assign({}, state);
+      newState.url = response.url;
+      setState(newState);
+    })
+    .catch(err=>{
+      console.log(err.message);
+    })
+
+
+  }
+
   return (
     <div className="App">
       <div className="App-header">
@@ -64,12 +96,14 @@ function App() {
             />
           </div>
           <div>
-            <button type='submit'>Submit</button>
+            <button type='submit'>Generate Alias</button>
+            <button onClick={onRetrive}>Retrive URL</button>
           </div>
         </form>
         <div>
           <p className="" style={{ display: created ? 'block' : 'none' }}>Your short url is: <a href="http://">{created}</a></p>
           <p className="" style={{ display: error ? 'block' : 'none' }}>Error: {error}</p>
+          <p className="" style={{ display: retrived ? 'block' : 'none' }}>Retrived URL: {state.url}</p>
         </div>
       </div>
 
