@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "express": "^4.17.1",
     "helmet": "^3.23.1",
+    "http-proxy-middleware": "^1.0.4",
     "mongoose": "^5.9.20",
     "monk": "^7.3.0",
     "morgan": "^1.10.0",
