@@ -22,7 +22,7 @@ function App() {
   };
 
   const createUrl = async (url, alias) => {
-    const res = await fetch('/api/url', {
+    const res = await fetch('/url', {
       method: 'POST',
       headers: {
         'content-type': 'application/json'

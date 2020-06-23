@@ -27,30 +27,37 @@ const db = monk(process.env.ATLAS_URI);
 const urls = db.get('urls');
  //urls.createIndex({alisa: 1},{unique: true});
 urls.createIndex('name');
-app.get('/api/:id', async (req, res, next) => {
+app.get('/:id', async (req, res, next) => {
   // find and redirect to the url
   const {id: alias} = req.params;
+  console.log('params', alias);
   try {
     const url = await urls.findOne({alias});
     if(url){
-      res.redirect(url.url);
+      console.log('URL Found');
+      console.log(url.url);
+      return res.redirect(url.url);
     }
-    res.redirect(`/?error=${alias} not found`);
+     console.log('Alias', alias);
+     return res.redirect(`/?error=${alias} not found`);
   }catch(err){
-    res.redirect(`/?error=Link Not Found`);
+     res.redirect(`/?error=Link Not Found`);
   }
 });
 
-app.get('/api/url/:id', (req, res) => {
+app.get('/url/:id', (req, res) => {
   // retrive the url
+  res.json({
+    message: "This api is not ready"
+  })
 });
 
 const schema = yup.object().shape({
   alias: yup.string().trim().matches(/^[\w\-]+$/i),
-  url: yup.string().trim().matches(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/i)
+  url: yup.string().trim().url().required()
 })
 
-app.post('/api/url', async (req, res, next) => {
+app.post('/url', async (req, res, next) => {
   // create a short url
   let { alias, url } = req.body;
   try {
