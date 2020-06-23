@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const path = require('path');
 const yup = require('yup');
-const {nanoid} = require('nanoid');
+const { nanoid } = require('nanoid');
 const mongoose = require('mongoose');
 const monk = require('monk');
 
@@ -25,31 +25,38 @@ app.use(express.static(path.join(__dirname, 'build/')));
 
 const db = monk(process.env.ATLAS_URI);
 const urls = db.get('urls');
- //urls.createIndex({alisa: 1},{unique: true});
+//urls.createIndex({alisa: 1},{unique: true});
 urls.createIndex('name');
 app.get('/:id', async (req, res, next) => {
   // find and redirect to the url
-  const {id: alias} = req.params;
-  console.log('params', alias);
+  const { id: alias } = req.params;
   try {
-    const url = await urls.findOne({alias});
-    if(url){
-      console.log('URL Found');
-      console.log(url.url);
+    const url = await urls.findOne({ alias });
+    if (url) {
       return res.redirect(url.url);
     }
-     console.log('Alias', alias);
-     return res.redirect(`/?error=${alias} not found`);
-  }catch(err){
-     res.redirect(`/?error=Link Not Found`);
+    return res.redirect(`/?error=${alias} not found`);
+  } catch (err) {
+    res.redirect(`/?error=Link Not Found`);
   }
 });
 
-app.get('/url/:id', (req, res) => {
+app.get('/url/:id', async (req, res, next) => {
   // retrive the url
-  res.json({
-    message: "This api is not ready"
-  })
+  const { id: alias } = req.params;
+  console.log('params', alias);
+  try {
+    const url = await urls.findOne({ alias });
+    if (url) {
+      return res.status(200).json(url);
+    }
+    res.status(500).json({
+      message: "Link Not Found"
+    })
+  } catch (err) {
+    next(err);
+  }
+
 });
 
 const schema = yup.object().shape({
@@ -65,9 +72,9 @@ app.post('/url', async (req, res, next) => {
       alias,
       url
     });
-    if(!alias){
+    if (!alias) {
       alias = nanoid(6);
-    }else{
+    } else {
       const existing = await urls.findOne({ alias });
       if (existing) {
         throw new Error('Alias exists');
@@ -78,9 +85,9 @@ app.post('/url', async (req, res, next) => {
       alias
     };
     const created = await urls.insert(newUrl);
-    res.json({created})
+    res.json({ created })
 
-  }catch(error){
+  } catch (error) {
     next(error);
   }
 });
