@@ -44,7 +44,7 @@ function App() {
 
   }
 
-  const onRetrive = async (event) =>{
+  const onRetrive = async (event) => {
     event.preventDefault();
     setError('');
     const newState = Object.assign({}, state);
@@ -52,24 +52,24 @@ function App() {
     setState(newState);
 
     fetch('/url/' + state.alias)
-    .then((res)=>{
-      if(res.ok){
-        return res.json();
-      }
-      else{
-        console.log('error:', res)
-        setError("Link Not Found");
-        throw new Error(res.message);
-      }
-    })
-    .then(response=>{
-      const newState = Object.assign({}, state);
-      newState.url = response.url;
-      setState(newState);
-    })
-    .catch(err=>{
-      console.log(err.message);
-    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        else {
+          console.log('error:', res)
+          setError("Link Not Found");
+          throw new Error(res.message);
+        }
+      })
+      .then(response => {
+        const newState = Object.assign({}, state);
+        newState.url = response.url;
+        setState(newState);
+      })
+      .catch(err => {
+        console.log(err.message);
+      })
 
 
   }
@@ -77,7 +77,7 @@ function App() {
   return (
     <div className="App">
       <div className="App-header">
-        <h1>Urls Shortner</h1>
+        <h1>Url Shortner</h1>
         <form action="" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="url">Url: </label>
@@ -101,7 +101,7 @@ function App() {
           </div>
         </form>
         <div>
-          <p className="" style={{ display: created ? 'block' : 'none' }}>Your short url is: <a href="http://">{created}</a></p>
+          <p className="" style={{ display: created ? 'block' : 'none' }}>Your short url is: <a href={`http://url-shortner.yizhou-liu.com/${created}`}>{created}</a></p>
           <p className="" style={{ display: error ? 'block' : 'none' }}>Error: {error}</p>
           <p className="" style={{ display: retrived ? 'block' : 'none' }}>Retrived URL: {state.url}</p>
         </div>
